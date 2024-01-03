@@ -20,7 +20,7 @@ export default function CustomDate(){
         <TouchableOpacity style={styles.dateBtn} onPress={handleVisibility}>
             <Text style={styles.dateTxt}>{selectedDate}</Text>
             <Modal
-            animationType='fade'
+            animationType='slide'
             transparent={true}
             visible={visibilityOfModal}>
                 <View style={styles.centeredView}>
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         backgroundColor:'white',
         borderColor:darkColor1,
-        borderWidth:1.5,
+        borderWidth:0.5,
         elevation:10, 
         justifyContent: 'center',
         alignItems: 'center',

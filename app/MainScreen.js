@@ -13,14 +13,17 @@ import { Entypo } from '@expo/vector-icons';
 export default function MainScreen(){
   const Tab = createMaterialBottomTabNavigator() 
   return(
-    <Tab.Navigator initialRouteName="Outlay" barStyle={{backgroundColor:primaryColor}}>
+    <Tab.Navigator 
+    initialRouteName="Outlay" 
+    barStyle={{backgroundColor:primaryColor}}
+    >
       <Tab.Screen 
       name="Add"
       component={AddScreen}
       options={{
         tabBarIcon:()=>(
           <Ionicons name="add-circle" size={24} color="black" />
-        )
+        ),
       }}
       />
       <Tab.Screen 

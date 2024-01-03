@@ -6,6 +6,7 @@ import { Foundation } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { TextInput } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function AddScreen(){
     const [expense, setExpense] = useState('');
@@ -14,6 +15,8 @@ export default function AddScreen(){
 
     const handleSync=()=>{
         console.log("Expense:", expense, "Category:", category)
+        setCategory('')
+        setExpense('')
     }
     const handleCancel=()=>{
         setCategory('')
@@ -29,11 +32,12 @@ export default function AddScreen(){
             <View style={styles.expenseComp}>
                 <View style={styles.expenseHeader}>
                     <Text style={styles.expenseHeaderTxt}>Add Expense</Text>
+                    <FontAwesome name="money" size={24} color="black" style={{marginTop:5}}/>
                 </View>
                 <View style={styles.inputView}>
                     <View style={styles.expenseView}>
                         <View style={styles.iconHolder}>
-                            <Foundation name="dollar" size={42} color="black" />
+                            <Foundation name="dollar" size={34} color="black" />
                         </View>
                         <TextInput 
                         style={styles.Input}
@@ -50,7 +54,7 @@ export default function AddScreen(){
                 <View style={styles.inputView}>
                     <View style={styles.categoryView}>
                         <View style={styles.iconHolderCategory}>
-                            <MaterialIcons name="category" size={38} color="black" />
+                            <MaterialIcons name="category" size={32} color="black" />
                         </View>
                         <TextInput 
                         style={styles.Input}
@@ -79,18 +83,18 @@ export default function AddScreen(){
 const styles = StyleSheet.create({
     addscreen:{
         flex: 1,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'white',
     },
     dateComponentViewHolder:{
         flexDirection:'row-reverse',
     },
     expenseComp:{
-        backgroundColor:whiteSmoke,
-        borderRadius:25,
-        margin:5,
+        backgroundColor:'white',
+        borderRadius:10,
+        margin:10,
         elevation:5,
         borderColor:darkColor1,
-        borderWidth:1.5,
+        borderWidth:0.5,
         minHeight:500
     },
     expenseHeader:{
@@ -98,10 +102,12 @@ const styles = StyleSheet.create({
         marginRight:35,
         marginTop:25,
         borderBottomColor:darkColor4,
-        borderWidth:1.5,
+        borderWidth:0.5,
         borderRightColor:'transparent',
         borderLeftColor:'transparent',
-        borderTopColor:'transparent'
+        borderTopColor:'transparent',
+        flexDirection:'row',
+        gap:5
     },
     expenseHeaderTxt:{
         fontSize:22,
@@ -131,16 +137,18 @@ const styles = StyleSheet.create({
     iconHolder:{
         backgroundColor:'white',
         width:50,
-        paddingLeft:15,
+        paddingLeft:18,
+        paddingTop:5,
         borderRadius:5,
-        borderWidth:2
+        borderWidth:0.5
     },
     iconHolderCategory:{
         backgroundColor:'white',
         width:50,
-        paddingLeft:5,
+        paddingLeft:9,
+        paddingTop:5,
         borderRadius:5,
-        borderWidth:2
+        borderWidth:0.5
     },
     Input:{
         backgroundColor:'transparent',
@@ -156,7 +164,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:"center",
         borderRadius:50,
-        borderWidth:2,
+        borderWidth:0.5,
         elevation:3,
     },
     cancelBtn:{
@@ -166,7 +174,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:"center",
         borderRadius:50,
-        borderWidth:2,
+        borderWidth:0.5,
         elevation:3,
         marginTop:10
     },
