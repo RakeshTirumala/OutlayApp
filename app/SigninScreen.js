@@ -1,28 +1,28 @@
 import React, {useState} from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from "react-native";
-import { MaterialIcons } from '@expo/vector-icons';
-import { Entypo } from '@expo/vector-icons';
-import { darkColor1, primaryColor } from "../constants";
+import { Text, View, StyleSheet, TextInput, TouchableOpacity} from "react-native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from '@expo/vector-icons';
 
-export default function LoginScreen(){
+export default function SigninScreen(){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const navigation = useNavigation();
-    const handleLogin=()=>{
+
+    const handleSignin=()=>{
         navigation.navigate('Main')
     }
-
-    const handleSignUp=()=>{
-        navigation.navigate('Signin')
+    const handleLogin=()=>{
+        navigation.navigate('Login')
     }
     return(
-        <View style={styles.loginScreen}>
-            <View style={styles.loginComponent}>
+        <View style={styles.signinScreen}>
+            <View style={styles.signinComponent}>
                 <View style={{flexDirection:'row', paddingBottom:20}}>
-                    <Text style={styles.loginTxtStyle}>Log In</Text>
-                    <MaterialIcons name="login" size={24} color="black" style={{marginTop:5, marginLeft:5}}/>
+                    <Text style={styles.signinTxtStyle}>Sign Up</Text>
+                    <MaterialCommunityIcons name="account-plus-outline" size={24} color="black" style={{marginTop:5, marginLeft:5}}/>
                 </View>
                 {/* Email View */}
                 <View style={styles.inputView}>
@@ -53,7 +53,7 @@ export default function LoginScreen(){
                         </View>
                         <TextInput 
                         style={styles.Input}
-                        placeholder="password"
+                        placeholder="Password"
                         cursorColor="black"
                         selectionColor="grey"
                         activeUnderlineColor="black"
@@ -63,29 +63,46 @@ export default function LoginScreen(){
                         />
                     </View>
                 </View>
-
-                <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
-                    <Text style={{color:'white', fontSize:16}}>Login</Text>
+                {/* Confirm Password */}
+                <View style={styles.inputView}>
+                    <View style={styles.passwordView}>
+                        <View style={styles.iconHolder}>
+                            <Ionicons name="shield-checkmark-outline" size={24} color="black" />
+                        </View>
+                        <TextInput 
+                        style={styles.Input}
+                        placeholder="Confirm password"
+                        cursorColor="black"
+                        selectionColor="grey"
+                        activeUnderlineColor="black"
+                        value={confirmPassword}
+                        onChangeText={cpsd=>setConfirmPassword(cpsd)}
+                        secureTextEntry={true}
+                        />
+                    </View>
+                </View>
+                <TouchableOpacity style={styles.signinBtn} onPress={handleSignin}>
+                    <Text style={{color:'white', fontSize:16}}>Sign In</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleSignUp}>
-                    <Text>No Account? <Text style={{textDecorationLine:'underline'}}>Sign Up!</Text></Text>
+                <TouchableOpacity onPress={handleLogin}>
+                    <Text>Have an Account? <Text style={{textDecorationLine:'underline'}}>Log In!</Text></Text>
                 </TouchableOpacity>
             </View>
         </View>
     )
-} 
+}
 
 const styles = StyleSheet.create({
-    loginScreen:{
+    signinScreen:{
         flex:1,
         backgroundColor:'white',
         justifyContent:"center",
     },
-    loginTxtStyle:{
+    signinTxtStyle:{
         fontSize:24,
         fontWeight:'bold',
     },
-    loginComponent:{
+    signinComponent:{
         justifyContent:"center",
         alignItems:"center",
         backgroundColor:'white',
@@ -128,7 +145,7 @@ const styles = StyleSheet.create({
         borderColor:'black',
         borderBottomWidth:1
     },
-    loginBtn:{
+    signinBtn:{
         backgroundColor:'black',
         width:280,
         height:50,

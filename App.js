@@ -6,6 +6,8 @@ import MainScreen from './app/MainScreen';
 import { SafeAreaView } from 'react-native-safe-area-context';  
 import { StatusBar } from 'expo-status-bar';
 import { primaryColor } from './constants';
+import LoginScreen from './app/LoginScreen';
+import SigninScreen from './app/SigninScreen';
 
 export default function App() {
   const Stack = createStackNavigator();  
@@ -14,10 +16,23 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator 
         screenOptions={{headerShown:false}}
-        initialRouteName='Main'>
+        initialRouteName='Login'>
+
+          <Stack.Screen 
+          name='Login'
+          component={LoginScreen}
+          />
+
+          <Stack.Screen 
+          name='Signin'
+          component={SigninScreen}
+          />
+
           <Stack.Screen 
           name='Main' 
           component={MainScreen}/>
+
+
         </Stack.Navigator>
       </NavigationContainer>
       <StatusBar backgroundColor='black'/>
