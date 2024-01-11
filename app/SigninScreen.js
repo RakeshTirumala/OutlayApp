@@ -1,9 +1,10 @@
 import React, {useState} from "react";
-import { Text, View, StyleSheet, TextInput, TouchableOpacity} from "react-native";
+import { Text, View, StyleSheet, TextInput, TouchableOpacity, ToastAndroid} from "react-native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons';
+
 
 export default function SigninScreen(){
     const [email, setEmail] = useState('');
@@ -11,8 +12,35 @@ export default function SigninScreen(){
     const [confirmPassword, setConfirmPassword] = useState('');
     const navigation = useNavigation();
 
-    const handleSignin=()=>{
-        navigation.navigate('Main')
+    const handleSignin=async()=>{
+        try{
+            const response = await fetch(process.env.EXPO_PUBLIC_SIGNIN_URL, {
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                }),
+            })
+            const statusCode = response.status 
+            switch(statusCode){
+                case 201:
+                    await ToastAndroid.show('Account Created!', ToastAndroid.BOTTOM);
+                    navigation.navigate('Login')
+                    break;
+                case 400:
+                    await ToastAndroid.show('Account already exists!', ToastAndroid.BOTTOM);
+                    navigation.navigate('Login')
+                    break;
+                case 500:
+                    await ToastAndroid.show('Internal Error!', ToastAndroid.BOTTOM)
+                    break;
+                default:
+                    console.log("ISSUE:, The Respone:\n", response)
+            }
+        }catch{
+            await ToastAndroid.show('Failed!', ToastAndroid.BOTTOM)
+        }
     }
     const handleLogin=()=>{
         navigation.navigate('Login')
@@ -22,7 +50,10 @@ export default function SigninScreen(){
             <View style={styles.signinComponent}>
                 <View style={{flexDirection:'row', paddingBottom:20}}>
                     <Text style={styles.signinTxtStyle}>Sign Up</Text>
-                    <MaterialCommunityIcons name="account-plus-outline" size={24} color="black" style={{marginTop:5, marginLeft:5}}/>
+                    <MaterialCommunityIcons 
+                    name="account-plus-outline" 
+                    size={24} color="black" 
+                    style={{marginTop:5, marginLeft:5}}/>
                 </View>
                 {/* Email View */}
                 <View style={styles.inputView}>

@@ -69,7 +69,7 @@ export default function PreferencesScreen(){
                     </View>
                 </View>
                 {/* Data Controls */}
-                <View style={styles.dataControlsView}>
+                {/* <View style={styles.dataControlsView}>
                     <View style={{flexDirection:'row',paddingLeft:20}}>
                         <Text style={styles.preferenceScreenTxtStyle2}>{dataSync}</Text>
                         <Switch
@@ -85,7 +85,7 @@ export default function PreferencesScreen(){
                     textAlign:'justify', lineHeight:16, 
                     marginLeft:20, marginRight:5, 
                     marginBottom:20}}>{dataSyncParah}</Text>
-                </View>
+                </View> */}
             </View>
         </View>
     )

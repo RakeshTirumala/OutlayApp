@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from 'react-native';
-import { darkColor1, darkColor3, primaryColor } from "../constants";
+import { darkColor1, darkColor3, iconColor, primaryColor, secondaryColor } from "../constants";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import OutlayScreen from "./OutlayScreen";
 import AddScreen from "./AddScreen";
@@ -15,14 +15,14 @@ export default function MainScreen(){
   return(
     <Tab.Navigator 
     initialRouteName="Outlay" 
-    barStyle={{backgroundColor:primaryColor}}
+    barStyle={{backgroundColor:secondaryColor}}
     >
       <Tab.Screen 
       name="Add"
       component={AddScreen}
       options={{
         tabBarIcon:()=>(
-          <Ionicons name="add-circle" size={24} color="black" />
+          <Ionicons name="add-circle" size={24} color={iconColor} />
         ),
       }}
       />
@@ -31,7 +31,7 @@ export default function MainScreen(){
       component={OutlayScreen}
       options={{
         tabBarIcon:()=>(
-          <Entypo name="pie-chart" size={24} color="black"/>
+          <Entypo name="pie-chart" size={24} color={iconColor}/>
         )
       }}
       />
@@ -40,7 +40,7 @@ export default function MainScreen(){
       component={PreferencesScreen}
       options={{
         tabBarIcon:()=>(
-          <MaterialIcons name="account-circle" size={24} color="black" />
+          <MaterialIcons name="account-circle" size={24} color={iconColor} />
         )
       }}
       />

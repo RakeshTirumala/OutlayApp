@@ -5,5 +5,6 @@ export const darkColor2 = '#36393e'
 export const darkColor3 = '#282b30'
 export const darkColor4 = '#1e2124'
 export const whiteSmoke = "#F5F5F5"
+export const iconColor = '#242a40'
 export const dummyEmail = "moonscoob@gmail.com"
 export const dataSyncParah = "Saving data in this app to your history is recommended. Not saving could result in data loss." 

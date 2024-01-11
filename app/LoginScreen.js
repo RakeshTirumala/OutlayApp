@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ToastAndroid} from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { darkColor1, primaryColor } from "../constants";
@@ -10,8 +10,38 @@ export default function LoginScreen(){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigation = useNavigation();
-    const handleLogin=()=>{
-        navigation.navigate('Main')
+
+
+    const handleLogin=async()=>{
+        try{
+            const response = await fetch(process.env.EXPO_PUBLIC_LOGIN_URL, {
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({
+                    email:email,
+                    password:password
+                })
+            })
+            const statusCode = response.status 
+            const data = await response.json()
+            switch(statusCode){
+                case 201:
+                    await ToastAndroid.show('Login Success!', ToastAndroid.BOTTOM);
+                    console.log(data.token)
+                    navigation.navigate('Main');
+                    break;
+                case 401:
+                    await ToastAndroid.show('Invalid email or password!', ToastAndroid.BOTTOM);
+                    break;
+                case 500:
+                    await ToastAndroid.show('Internal Error!', ToastAndroid.BOTTOM)
+                    break;
+                default:
+                    console.log("ISSUE:, The Respone:\n", response)
+            }
+        }catch(error){
+            await ToastAndroid.show('Failed!', ToastAndroid.BOTTOM)
+        }
     }
 
     const handleSignUp=()=>{
