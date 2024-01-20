@@ -1,20 +1,80 @@
 import React, {useState} from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid } from "react-native";
 import CustomDate from "../components/CustomDate";
 import { darkColor1, darkColor4, primaryColor, secondaryColor, whiteSmoke } from "../constants";
 import { Foundation } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { TextInput } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import { FontAwesome } from '@expo/vector-icons';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from 'react-native-toast-message';
 
 export default function AddScreen(){
     const [expense, setExpense] = useState('');
     const [category, setCategory] = useState('');
     const navigation = useNavigation();
+    const dateTostoreInDb = new Date().toLocaleDateString('en-US') 
 
-    const handleSync=()=>{
-        console.log("Expense:", expense, "Category:", category)
+    const handleSync=async()=>{
+        console.log("Expense:", expense, "Category:", category, "Date:", dateTostoreInDb)
+        const token = await AsyncStorage.getItem('token');
+        const email = await AsyncStorage.getItem('userEmail');
+        try{
+            const response = await fetch(process.env.EXPO_PUBLIC_EXPENSE_URL_GOOGLE, {
+                method:'POST',
+                headers:{
+                'Content-Type':'application/json', 
+                'authorization': `Bearer ${token}`
+                },
+                body:JSON.stringify({
+                    email:email,
+                    date:dateTostoreInDb,
+                    expense:expense,
+                    category:category
+                })
+            })
+            const statusCode = response.status;
+            console.log(statusCode)
+            switch(statusCode){
+                case 201:
+                    // await ToastAndroid.show('Expense Added!', ToastAndroid.BOTTOM);
+                    Toast.show({
+                        type:'success',
+                        text1:'Expense Added!'
+                    })
+                    break;
+                case 401:
+                    // await ToastAndroid.show('Null!', ToastAndroid.BOTTOM)
+                    Toast.show({
+                        type:'info',
+                        text1:'Null!'
+                    });
+                    break;
+                case 403:
+                    // await ToastAndroid.show('Invalid Authorization', ToastAndroid.BOTTOM);
+                    Toast.show({
+                        type:'error',
+                        text1:'Invalid Authorization'
+                    })
+                    break;
+                case 500:
+                    // await ToastAndroid.show('Internal Error!', ToastAndroid.BOTTOM)
+                    Toast.show({
+                        type:'error',
+                        text1:'Internal Error!'
+                    })
+                    break;
+                default:
+                    console.log("ISSUE:, The Respone:\n", response)
+            }
+        }catch(error){
+            // await ToastAndroid.show('Failed!', ToastAndroid.BOTTOM)
+            Toast.show({
+                type:'error',
+                text1:'Failed!'
+            })
+            console.log(error)
+        }
         setCategory('')
         setExpense('')
     }
@@ -32,7 +92,7 @@ export default function AddScreen(){
             <View style={styles.expenseComp}>
                 <View style={styles.expenseHeader}>
                     <Text style={styles.expenseHeaderTxt}>Add Expense</Text>
-                    <FontAwesome name="money" size={24} color="black" style={{marginTop:5}}/>
+                    <MaterialIcons name="payment" size={24} color="black" style={{marginTop:5}}/>
                 </View>
                 <View style={styles.inputView}>
                     <View style={styles.expenseView}>

@@ -2,19 +2,49 @@ import React, {useState} from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ToastAndroid} from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
-import { darkColor1, primaryColor } from "../constants";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {jwtDecode} from 'jwt-decode';
+import { decode, encode } from 'base-64';
+import Toast from 'react-native-toast-message';
+
+async function checkLoggedInUser(navigation){
+    const token = await AsyncStorage.getItem('token');   
+    if(token!==null){
+        console.log("Token:", token)
+        console.log("Checking token expiry date")
+        if (!global.btoa) global.btoa = encode;
+        if (!global.atob) global.atob = decode;
+        const decodeToken = jwtDecode(token);
+        console.log("decoded Token:", decodeToken)
+        if (decodeToken.exp * 1000 >= Date.now()) navigation.navigate('Main');
+    }else navigation.navigate('Login')
+}
 
 export default function LoginScreen(){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigation = useNavigation();
 
+    checkLoggedInUser(navigation);
+
+    const storeUserDataToLocalDB=async(token, theme, mo)=>{
+        try{
+            await AsyncStorage.setItem('token', token);
+            await AsyncStorage.setItem('userEmail', email);
+            await AsyncStorage.setItem('theme', theme.toString());
+            await AsyncStorage.setItem('mo', mo);
+            console.log("Saved data!");
+        }catch(error){
+            console.log("Error saving the data:", error);
+        }
+    }
+
 
     const handleLogin=async()=>{
         try{
-            const response = await fetch(process.env.EXPO_PUBLIC_LOGIN_URL, {
+            const response = await fetch(process.env.EXPO_PUBLIC_LOGIN_URL_GOOGLE, {
                 method:'POST',
                 headers:{'Content-Type':'application/json'},
                 body:JSON.stringify({
@@ -26,21 +56,38 @@ export default function LoginScreen(){
             const data = await response.json()
             switch(statusCode){
                 case 201:
-                    await ToastAndroid.show('Login Success!', ToastAndroid.BOTTOM);
+                    storeUserDataToLocalDB(data.token, data.theme, data.mo)
+                    // await ToastAndroid.show('Login Success!', ToastAndroid.BOTTOM);
+                    Toast.show({
+                        type:'success',
+                        text1:'Login Success!',
+                    })
                     console.log(data.token)
                     navigation.navigate('Main');
                     break;
                 case 401:
-                    await ToastAndroid.show('Invalid email or password!', ToastAndroid.BOTTOM);
+                    // await ToastAndroid.show('Invalid email or password!', ToastAndroid.BOTTOM);
+                    Toast.show({
+                        type:'info',
+                        text1:'Invalid email or password!',
+                    })
                     break;
                 case 500:
-                    await ToastAndroid.show('Internal Error!', ToastAndroid.BOTTOM)
+                    // await ToastAndroid.show('Internal Error!', ToastAndroid.BOTTOM)
+                    Toast.show({
+                        type:'error',
+                        text1:'Internal Error!',
+                    })
                     break;
                 default:
                     console.log("ISSUE:, The Respone:\n", response)
             }
         }catch(error){
-            await ToastAndroid.show('Failed!', ToastAndroid.BOTTOM)
+            // await ToastAndroid.show('Failed!', ToastAndroid.BOTTOM)
+            Toast.show({
+                type:'error',
+                text1:'Failed!'
+            })
         }
     }
 

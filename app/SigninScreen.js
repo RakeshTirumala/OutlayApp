@@ -4,7 +4,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons';
-
+import Toast from "react-native-toast-message";
 
 export default function SigninScreen(){
     const [email, setEmail] = useState('');
@@ -14,7 +14,7 @@ export default function SigninScreen(){
 
     const handleSignin=async()=>{
         try{
-            const response = await fetch(process.env.EXPO_PUBLIC_SIGNIN_URL, {
+            const response = await fetch(process.env.EXPO_PUBLIC_SIGNIN_URL_GOOGLE, {
                 method:'POST',
                 headers:{'Content-Type':'application/json'},
                 body: JSON.stringify({
@@ -25,21 +25,37 @@ export default function SigninScreen(){
             const statusCode = response.status 
             switch(statusCode){
                 case 201:
-                    await ToastAndroid.show('Account Created!', ToastAndroid.BOTTOM);
+                    // await ToastAndroid.show('Account Created!', ToastAndroid.BOTTOM);
+                    Toast.show({
+                        type:'success',
+                        text1:'Account Created!'
+                    })
                     navigation.navigate('Login')
                     break;
                 case 400:
-                    await ToastAndroid.show('Account already exists!', ToastAndroid.BOTTOM);
+                    // await ToastAndroid.show('Account already exists!', ToastAndroid.BOTTOM);
+                    Toast.show({
+                        type:'info',
+                        text1:'Account already exists!'
+                    })
                     navigation.navigate('Login')
                     break;
                 case 500:
-                    await ToastAndroid.show('Internal Error!', ToastAndroid.BOTTOM)
+                    // await ToastAndroid.show('Internal Error!', ToastAndroid.BOTTOM)
+                    Toast.show({
+                        type:'error',
+                        text1:'Internal Error!'
+                    })
                     break;
                 default:
                     console.log("ISSUE:, The Respone:\n", response)
             }
         }catch{
-            await ToastAndroid.show('Failed!', ToastAndroid.BOTTOM)
+            // await ToastAndroid.show('Failed!', ToastAndroid.BOTTOM)
+            Toast.show({
+                type:'error',
+                text1:'Failed!'
+            })
         }
     }
     const handleLogin=()=>{

@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View } from 'react-native';
-import { darkColor1, darkColor3, iconColor, primaryColor, secondaryColor } from "../constants";
+import { darkColor1, darkColor3, iconColor, primaryColor, secondaryColor, whiteSmoke } from "../constants";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import OutlayScreen from "./OutlayScreen";
 import AddScreen from "./AddScreen";
@@ -15,7 +15,7 @@ export default function MainScreen(){
   return(
     <Tab.Navigator 
     initialRouteName="Outlay" 
-    barStyle={{backgroundColor:secondaryColor}}
+    barStyle={{backgroundColor:primaryColor}}
     >
       <Tab.Screen 
       name="Add"

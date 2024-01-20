@@ -2,24 +2,33 @@ import React, {useState} from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Modal} from "react-native";
 import { darkColor1, secondaryColor, whiteSmoke } from "../constants";
 import DatePicker from "react-native-modern-datepicker";
+import { Ionicons } from '@expo/vector-icons';
 
 export default function CustomDate(){
-    const initialDate = new Date().toLocaleDateString('en-US', { day: 'numeric' }); 
-    const [selectedDate, setSelectedDate] = useState(initialDate)
-    const [visibilityOfModal, setVisibilityOfModal] = useState(false)
-    const handleVisibility=()=>{
-        setVisibilityOfModal(!visibilityOfModal)
-    }
-    const handleDateChange=(date)=>{
-        console.log(date)
-        date = date.split("/")[2]
-        setSelectedDate(date)
-    }
+    // const initialDate = new Date().toLocaleDateString('en-US', { day: 'numeric' }); 
+    const dateTostoreInDb = new Date().toLocaleDateString('en-US')
+    console.log("initialdate:", dateTostoreInDb)
+    // setDateToLocalDB(dateTostoreInDb, 'initialDate');
+    // const [selectedDate, setSelectedDate] = useState(initialDate)
+    // const [visibilityOfModal, setVisibilityOfModal] = useState(false)
+
+    // const handleVisibility=()=>{
+    //     setVisibilityOfModal(!visibilityOfModal)
+    // }
+    
+    // const handleDateChange=(date)=>{
+    //     console.log("Selected date:",date)
+    //     let temp = date
+    //     temp = temp.split("/")[2]
+    //     setSelectedDate(temp)
+    //     // setDateToLocalDB(date, 'selectedDate');
+    // }
 
     return(
-        <TouchableOpacity style={styles.dateBtn} onPress={handleVisibility}>
-            <Text style={styles.dateTxt}>{selectedDate}</Text>
-            <Modal
+        <TouchableOpacity style={styles.dateBtn}>
+            <Text style={styles.dateTxt}>{dateTostoreInDb}</Text>
+            <Ionicons name="calendar-outline" size={24} color="black" />
+            {/* <Modal
             animationType='slide'
             transparent={true}
             visible={visibilityOfModal}>
@@ -47,7 +56,7 @@ export default function CustomDate(){
                         </TouchableOpacity>
                     </View>
                 </View>
-            </Modal>
+            </Modal> */}
         </TouchableOpacity>
         
     )
@@ -55,9 +64,9 @@ export default function CustomDate(){
 
 const styles = StyleSheet.create({
     dateBtn:{
-        width: 50,
+        width: 150,
         height: 50,
-        borderRadius: 50,
+        borderRadius: 5,
         backgroundColor:'white',
         borderColor:darkColor1,
         borderWidth:0.5,
@@ -69,6 +78,8 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 }, // Add shadow offset (iOS only)
         shadowOpacity: 0.3, // Add shadow opacity (iOS only)
         margin:10,
+        flexDirection:'row',
+        gap:10
     },
     dateTxt:{
         fontSize:18,

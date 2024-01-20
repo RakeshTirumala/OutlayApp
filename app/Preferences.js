@@ -1,27 +1,49 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, Switch} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, Switch, TouchableOpacity, ActionSheetIOS} from "react-native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { dataSyncParah, dummyEmail, primaryColor, secondaryColor } from "../constants";
 import RadioButtonGroup, { RadioButtonItem } from "expo-radio-button";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 export default function PreferencesScreen(){
     const [isEnabled, setIsEnabled] = useState(false);
     const [theme, setTheme] = useState('Light Theme');
-    const [current, setCurrent] = useState('Month')
+    const [currentMO, setCurrentMO] = useState('Month')
     const [dataSync, setDataSync] = useState("Don't sync")
     const [dataSyncEnabled, setDataSyncEnabled] = useState(false)
+    const navigation = useNavigation();
+    const [email, setEmail] = useState('');
 
-    const toggleSwitch = () =>{
-        setIsEnabled(previousState => !previousState)
-        if(isEnabled) setTheme('Light Theme')
-        else setTheme('Dark Theme')
+    const getDataFromLocal=async()=>{
+        const email = await AsyncStorage.getItem('userEmail');
+        const theme = await AsyncStorage.getItem('theme');
+        const mo = await AsyncStorage.getItem('mo');
+        setEmail(email);
+        setIsEnabled((theme==="true")?true:false);
+        setTheme((theme==="true")?'Dark Theme':'Light Theme')
+        setCurrentMO(mo);
+    }
+    getDataFromLocal()
+
+    const toggleSwitch = () => {
+        setIsEnabled((previousState) => !previousState);
+        setTheme((previousTheme) => (previousTheme === 'Light Theme' ? 'Dark Theme' : 'Light Theme'));
     };
+    
 
-    const dataToggleSwitch=()=>{
-        setDataSyncEnabled(previousState => !previousState)
-        if(!dataSyncEnabled) setDataSync('Sync!')
-        else setDataSync("Don't sync")
-     }
+    // const dataToggleSwitch=()=>{
+    //     setDataSyncEnabled(previousState => !previousState)
+    //     if(!dataSyncEnabled) setDataSync('Sync!')
+    //     else setDataSync("Don't sync")
+    //  }
+
+
+    const handleLogout=async()=>{
+        await AsyncStorage.removeItem('token');
+        await AsyncStorage.removeItem('userEmail');
+        navigation.navigate('Login');
+    }
     return(
         <View style={styles.preferenceScreen}>
             <View style={styles.preferencesTitle}>
@@ -35,7 +57,7 @@ export default function PreferencesScreen(){
                 <View style={styles.preferenceIDView}>
                     <View style={{flexDirection:'row', gap:5, paddingLeft:20,}}>
                         <Text style={styles.preferenceScreenTxtStyle}>Email ID:</Text>
-                        <Text style={styles.preferenceScreenTxtStyle}>{dummyEmail}</Text>
+                        <Text style={styles.preferenceScreenTxtStyle}>{email}</Text>
                     </View>
                 </View>
                 {/* Theme view */}
@@ -58,8 +80,8 @@ export default function PreferencesScreen(){
                         <View style={{marginTop:5}}>
                             <RadioButtonGroup
                             containerStyle={{ marginBottom: 20}}
-                            selected={current}
-                            onSelected={(value) => setCurrent(value)}
+                            selected={currentMO}
+                            onSelected={(value) => setCurrentMO(value)}
                             radioBackground={secondaryColor}
                             >
                                 <RadioButtonItem value="Month" label=" Month" style={styles.radioButton}/>
@@ -68,6 +90,10 @@ export default function PreferencesScreen(){
                         </View>
                     </View>
                 </View>
+                {/* Logout Button */}
+                <TouchableOpacity style={styles.logoutView}>
+                    <Text style={{paddingLeft:20, color:'grey', fontSize:16}} onPress={handleLogout}>Logout</Text>
+                </TouchableOpacity>
                 {/* Data Controls */}
                 {/* <View style={styles.dataControlsView}>
                     <View style={{flexDirection:'row',paddingLeft:20}}>
@@ -122,7 +148,7 @@ const styles = StyleSheet.create({
     },
     preferenceScreenTxtStyle:{
         color:'grey',
-        fontSize:16
+        fontSize:16,
     },
     preferenceScreenTxtStyle2:{
         color:'grey',
@@ -155,6 +181,15 @@ const styles = StyleSheet.create({
         gap:5,
         margin:5,
         borderRadius:5,
+        justifyContent:"center",
+        elevation:5
+    },
+    logoutView:{
+        backgroundColor:'white',
+        gap:5,
+        margin:5,
+        borderRadius:5,
+        height:50,
         justifyContent:"center",
         elevation:5
     }
