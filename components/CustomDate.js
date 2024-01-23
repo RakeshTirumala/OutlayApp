@@ -3,11 +3,14 @@ import { View, StyleSheet, Text, TouchableOpacity, Modal} from "react-native";
 import { darkColor1, secondaryColor, whiteSmoke } from "../constants";
 import DatePicker from "react-native-modern-datepicker";
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function CustomDate(){
     // const initialDate = new Date().toLocaleDateString('en-US', { day: 'numeric' }); 
     const dateTostoreInDb = new Date().toLocaleDateString('en-US')
     console.log("initialdate:", dateTostoreInDb)
+    const [bgThemeColor, setBGThemeColor] = useState(styles.lightBGColor);
+    const [fontThemeColor, setFontThemeColor] = useState(styles.lightThemeFontColor);
     // setDateToLocalDB(dateTostoreInDb, 'initialDate');
     // const [selectedDate, setSelectedDate] = useState(initialDate)
     // const [visibilityOfModal, setVisibilityOfModal] = useState(false)
@@ -23,11 +26,18 @@ export default function CustomDate(){
     //     setSelectedDate(temp)
     //     // setDateToLocalDB(date, 'selectedDate');
     // }
+    async function setTheme(){
+        const t = await AsyncStorage.getItem('theme')
+        setBGThemeColor((t==='true')?styles.darkBGColor:styles.lightBGColor)
+        setFontThemeColor((t==='true')?styles.darkThemeFontColor:styles.lightThemeFontColor)
+    }
+
+    setTheme()
 
     return(
-        <TouchableOpacity style={styles.dateBtn}>
-            <Text style={styles.dateTxt}>{dateTostoreInDb}</Text>
-            <Ionicons name="calendar-outline" size={24} color="black" />
+        <TouchableOpacity style={[styles.dateBtn, bgThemeColor]}>
+            <Text style={[styles.dateTxt, fontThemeColor]}>{dateTostoreInDb}</Text>
+            <Ionicons name="calendar-outline" size={24} style={[fontThemeColor]} />
             {/* <Modal
             animationType='slide'
             transparent={true}
@@ -68,15 +78,13 @@ const styles = StyleSheet.create({
         height: 50,
         borderRadius: 5,
         backgroundColor:'white',
-        borderColor:darkColor1,
-        borderWidth:0.5,
-        elevation:10, 
+        elevation:3, 
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor:darkColor1,
-        shadowColor: darkColor1 , // Add shadow color (iOS only)
-        shadowOffset: { width: 0, height: 2 }, // Add shadow offset (iOS only)
-        shadowOpacity: 0.3, // Add shadow opacity (iOS only)
+        // shadowColor:darkColor1,
+        // shadowColor: darkColor1 , // Add shadow color (iOS only)
+        // shadowOffset: { width: 0, height: 2 }, // Add shadow offset (iOS only)
+        // shadowOpacity: 0.3, // Add shadow opacity (iOS only)
         margin:10,
         flexDirection:'row',
         gap:10
@@ -108,4 +116,16 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
       },
+    darkBGColor:{
+        backgroundColor:'#36393e'
+    },
+    lightBGColor:{
+        backgroundColor:'#FFFFFF'
+    },
+    darkThemeFontColor:{
+        color:'white',
+    },
+    lightThemeFontColor:{
+        color:'black'
+    },
 })

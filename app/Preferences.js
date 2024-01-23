@@ -1,36 +1,107 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Switch, TouchableOpacity, ActionSheetIOS} from "react-native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { dataSyncParah, dummyEmail, primaryColor, secondaryColor } from "../constants";
+import { darkThemeBGColor, dataSyncParah, dummyEmail, lightThemeBGColor, primaryColor, secondaryColor } from "../constants";
 import RadioButtonGroup, { RadioButtonItem } from "expo-radio-button";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 
 export default function PreferencesScreen(){
     const [isEnabled, setIsEnabled] = useState(false);
     const [theme, setTheme] = useState('Light Theme');
-    const [currentMO, setCurrentMO] = useState('Month')
-    const [dataSync, setDataSync] = useState("Don't sync")
-    const [dataSyncEnabled, setDataSyncEnabled] = useState(false)
+    const [currentMO, setCurrentMO] = useState('')
+    // const [dataSync, setDataSync] = useState("Don't sync")
+    // const [dataSyncEnabled, setDataSyncEnabled] = useState(false)
     const navigation = useNavigation();
     const [email, setEmail] = useState('');
+    const [bgThemeColor, setBGThemeColor] = useState(styles.lightBGColor);
+    const [fontThemeColor, setFontThemeColor] = useState(styles.lightThemeFontColor);
 
-    const getDataFromLocal=async()=>{
-        const email = await AsyncStorage.getItem('userEmail');
-        const theme = await AsyncStorage.getItem('theme');
-        const mo = await AsyncStorage.getItem('mo');
-        setEmail(email);
-        setIsEnabled((theme==="true")?true:false);
-        setTheme((theme==="true")?'Dark Theme':'Light Theme')
+    //FETCHING & SETTING EMAIL 
+    const getnSetEmailFromLocal=async()=>{
+        let emailid = await AsyncStorage.getItem('userEmail')
+        setEmail(emailid);
+    }
+    //FETCHING & SETTING THEME
+    const getnSetThemeFromLocal=async()=>{
+        let t = await AsyncStorage.getItem('theme')
+        setTheme(t==="true"?'Dark Theme':'Light Theme');
+        setIsEnabled((t==="true")?true:false);
+    }
+    //FETCHING & SETTING MO
+    const getnSetMOFromLocal=async()=>{
+        let mo = await AsyncStorage.getItem('mo');
         setCurrentMO(mo);
     }
-    getDataFromLocal()
+    //FETCHING AND SETTING BG THEME
+    const setBGTheme=async()=>{
+        const t = await AsyncStorage.getItem('theme')
+        setBGThemeColor((t==='true')?styles.darkBGColor:styles.lightBGColor)
+        setFontThemeColor((t==='true')?styles.darkThemeFontColor:styles.lightThemeFontColor)
 
-    const toggleSwitch = () => {
-        setIsEnabled((previousState) => !previousState);
-        setTheme((previousTheme) => (previousTheme === 'Light Theme' ? 'Dark Theme' : 'Light Theme'));
+    }
+
+    //ToggleHandling
+    const toggleSwitch = async() => {
+        await AsyncStorage.setItem('theme', `${!isEnabled}`)
+        const token = await AsyncStorage.getItem('token');
+        try{
+            const response = await fetch(process.env.EXPO_PUBLIC_THEME_URL_GOOGLE, {
+                method:'PUT',
+                headers:{
+                    'Content-Type':'application/json', 
+                    'authorization': `Bearer ${token}`},
+                body:JSON.stringify({email:email,theme:!isEnabled})
+            })
+            if(response.ok){
+                Toast.show({
+                    'type':'success',
+                    'text1':'Success!'
+                })
+                getnSetThemeFromLocal()
+                setBGTheme()
+            }
+        }catch(error){
+            console.log('Error', error);
+            Toast.show({
+                type:'error',
+                text1:'Try again!'
+            })
+        }
+
     };
     
+    //RadioButtonHandling
+    const setMOHandling=async(mo)=>{
+        await AsyncStorage.setItem('mo', mo)
+        const token = await AsyncStorage.getItem('token');
+        try{
+            const response = await fetch(process.env.EXPO_PUBLIC_MO_URL_GOOGLE, {
+                method:'PUT',
+                headers:{
+                    'Content-Type':'application/json', 
+                    'authorization': `Bearer ${token}`
+                },
+                body:JSON.stringify({email:email, mo:mo})
+            })
+
+            if(response.ok){
+                Toast.show({
+                    'type':'success',
+                    'text1':'Success!'
+                })
+                getnSetMOFromLocal()
+            }
+
+        }catch(error){
+            console.log(error)
+            Toast.show({
+                type:'error',
+                text1:'Try Again!'
+            })
+        }
+    }
 
     // const dataToggleSwitch=()=>{
     //     setDataSyncEnabled(previousState => !previousState)
@@ -38,32 +109,40 @@ export default function PreferencesScreen(){
     //     else setDataSync("Don't sync")
     //  }
 
-
+    //HANDLING LOGOUT
     const handleLogout=async()=>{
         await AsyncStorage.removeItem('token');
         await AsyncStorage.removeItem('userEmail');
         navigation.navigate('Login');
     }
+    setBGTheme();
+
+    useEffect(()=>{
+        getnSetEmailFromLocal();
+        getnSetThemeFromLocal();  
+        getnSetMOFromLocal();  
+    })
+
     return(
-        <View style={styles.preferenceScreen}>
-            <View style={styles.preferencesTitle}>
+        <View style={[styles.preferenceScreen, bgThemeColor]}>
+            <View style={[styles.preferencesTitle, bgThemeColor]}>
                 <View style={{flexDirection:'row', gap:5}}>
-                    <Text style={{fontSize:20}}>Preferences</Text>
-                    <MaterialCommunityIcons name="account-cog-outline" size={24} color="black" style={{paddingTop:2}}/>
+                    <Text style={[styles.titleFont, fontThemeColor]}>Preferences</Text>
+                    <MaterialCommunityIcons name="account-cog-outline" size={24} style={[fontThemeColor, styles.iconStyle]}/>
                 </View>
             </View>
-            <View style={styles.preferencesView}>
+            <View style={[styles.preferenceView, bgThemeColor]}>
                 {/* Email ID View */}
-                <View style={styles.preferenceIDView}>
-                    <View style={{flexDirection:'row', gap:5, paddingLeft:20,}}>
-                        <Text style={styles.preferenceScreenTxtStyle}>Email ID:</Text>
-                        <Text style={styles.preferenceScreenTxtStyle}>{email}</Text>
+                <View style={[styles.preferenceIDView, bgThemeColor]}>
+                    <View style={{flexDirection:'row', gap:5, paddingLeft:10,}}>
+                        <Text style={[styles.preferenceScreenTxtStyle, fontThemeColor]}>Email ID:</Text>
+                        <Text style={[styles.preferenceScreenTxtStyle, fontThemeColor]}>{email}</Text>
                     </View>
                 </View>
                 {/* Theme view */}
-                <View style={styles.themeView}>
-                    <View style={{flexDirection:'row',paddingLeft:20}}>
-                        <Text style={styles.preferenceScreenTxtStyle2}>{theme}</Text>
+                <View style={[styles.themeView, bgThemeColor]}>
+                    <View style={{flexDirection:'row',paddingLeft:10}}>
+                        <Text style={[styles.preferenceScreenTxtStyle2, fontThemeColor]}>{theme}</Text>
                         <Switch
                         onValueChange={toggleSwitch}
                         value={isEnabled}
@@ -74,25 +153,31 @@ export default function PreferencesScreen(){
                     </View>
                 </View>
                 {/* Month and Overall View  */}
-                <View style={styles.monthOverallView}>
-                    <View style={{flexDirection:'column', paddingLeft:20}}>
-                        <Text style={styles.preferenceScreenTxtStyle}>Month/Overall</Text>
-                        <View style={{marginTop:5}}>
+                <View style={[styles.monthOverallView, bgThemeColor]}>
+                    <View style={{flexDirection:'column', paddingLeft:10}}>
+                        <Text style={[styles.preferenceScreenTxtStyle, fontThemeColor]}>Month/Overall</Text>
+                        <View style={{marginTop:5, marginLeft:10}}>
                             <RadioButtonGroup
                             containerStyle={{ marginBottom: 20}}
                             selected={currentMO}
-                            onSelected={(value) => setCurrentMO(value)}
+                            onSelected={(value) => setMOHandling(value)}
                             radioBackground={secondaryColor}
                             >
-                                <RadioButtonItem value="Month" label=" Month" style={styles.radioButton}/>
-                                <RadioButtonItem value="Overall" label=" Overall" style={styles.radioButton}/>
+                                <RadioButtonItem 
+                                value="Month" 
+                                label={<Text style={fontThemeColor}>Month</Text>}
+                                style={styles.radioButton}/>
+                                <RadioButtonItem 
+                                value="Overall" 
+                                label={<Text style={fontThemeColor}>Overall</Text>}
+                                style={styles.radioButton}/>
                             </RadioButtonGroup>
                         </View>
                     </View>
                 </View>
                 {/* Logout Button */}
-                <TouchableOpacity style={styles.logoutView}>
-                    <Text style={{paddingLeft:20, color:'grey', fontSize:16}} onPress={handleLogout}>Logout</Text>
+                <TouchableOpacity style={[styles.logoutView, bgThemeColor]} onPress={handleLogout}>
+                    <Text style={[styles.logoutBtn, fontThemeColor]}>Logout</Text>
                 </TouchableOpacity>
                 {/* Data Controls */}
                 {/* <View style={styles.dataControlsView}>
@@ -118,33 +203,40 @@ export default function PreferencesScreen(){
 }
 
 const styles = StyleSheet.create({
+    logoutBtn:{
+        color:'grey', 
+        fontSize:16
+    },
+    iconStyle:{
+        paddingTop:2
+    },
+    titleFont:{
+        fontSize:20
+    },
     preferenceScreen:{
-        flex:1,
-        backgroundColor:'white'
+        flex:1
     },
     preferencesTitle:{
         backgroundColor:'white',
         height:50,
         justifyContent:"center",
         paddingLeft:25,
-        borderBottomColor:'black',
-        borderWidth:0.5,
         alignContent:'flex-start',
         alignItems:'flex-start',
-        textAlign:'right'
+        textAlign:'right',
+        elevation:3
     },
-    preferencesView:{
+    preferenceView:{
         flex:1,
-        backgroundColor:"white"
+        elevation:3
     },
     preferenceIDView:{
         backgroundColor:'white',
         gap:5,
-        margin:5,
-        borderRadius:5,
         height:50,
         justifyContent:"center",
-        elevation:5
+        elevation:3,
+        margin:2
     },
     preferenceScreenTxtStyle:{
         color:'grey',
@@ -158,19 +250,18 @@ const styles = StyleSheet.create({
     themeView:{
         backgroundColor:'white',
         gap:5,
-        margin:5,
-        borderRadius:5,
+        margin:2,
         height:50,
         justifyContent:"center",
-        elevation:5
+        elevation:3
     },
     monthOverallView:{
         backgroundColor:'white',
         gap:5,
-        margin:5,
-        borderRadius:5,
+        margin:2,
         justifyContent:"center",
-        elevation:5
+        elevation:3,
+        paddingTop:8
     },
     radioButton:{
         marginVertical:4,
@@ -187,10 +278,23 @@ const styles = StyleSheet.create({
     logoutView:{
         backgroundColor:'white',
         gap:5,
-        margin:5,
-        borderRadius:5,
+        margin:2,
         height:50,
         justifyContent:"center",
-        elevation:5
+        elevation:3,
+        borderRadius:5,
+        alignItems:'center'
+    },
+    darkBGColor:{
+        backgroundColor:'#36393e'
+    },
+    lightBGColor:{
+        backgroundColor:'#FFFFFF'
+    },
+    darkThemeFontColor:{
+        color:'white'
+    },
+    lightThemeFontColor:{
+        color:'black'
     }
 })

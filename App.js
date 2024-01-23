@@ -8,6 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 import { primaryColor } from './constants';
 import LoginScreen from './app/LoginScreen';
 import SigninScreen from './app/SigninScreen';
+import Toast from 'react-native-toast-message';
 
 export default function App() {
   const Stack = createStackNavigator();  
@@ -35,6 +36,7 @@ export default function App() {
 
         </Stack.Navigator>
       </NavigationContainer>
+      <Toast/>
       <StatusBar backgroundColor='black'/>
     </SafeAreaView>
   );

@@ -1,10 +1,10 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid } from "react-native";
 import CustomDate from "../components/CustomDate";
 import { darkColor1, darkColor4, primaryColor, secondaryColor, whiteSmoke } from "../constants";
 import { Foundation } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
-import { TextInput } from "react-native-paper";
+import { TextInput } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from 'react-native-toast-message';
@@ -14,6 +14,23 @@ export default function AddScreen(){
     const [category, setCategory] = useState('');
     const navigation = useNavigation();
     const dateTostoreInDb = new Date().toLocaleDateString('en-US') 
+    const [bgThemeColor, setBGThemeColor] = useState(styles.lightBGColor);
+    const [fontThemeColor, setFontThemeColor] = useState(styles.lightThemeFontColor);
+
+    //FETCHING AND SETTING BG THEME
+    const setTheme=async()=>{
+        const t = await AsyncStorage.getItem('theme')
+        setBGThemeColor((t==='true')?styles.darkBGColor:styles.lightBGColor)
+        setFontThemeColor((t==='true')?styles.darkThemeFontColor:styles.lightThemeFontColor)
+    }
+    useEffect(()=>{
+        const themePollingInterval = setInterval(setTheme, 1);
+        return () => {
+            clearInterval(themePollingInterval);
+        };
+    })
+    // setTheme()
+
 
     const handleSync=async()=>{
         console.log("Expense:", expense, "Category:", category, "Date:", dateTostoreInDb)
@@ -85,54 +102,56 @@ export default function AddScreen(){
     }
     
     return(
-        <View style={styles.addscreen}>
-            <View style={styles.dateComponentViewHolder}>
+        <View style={[styles.addscreen, bgThemeColor]}>
+            <View style={[styles.dateComponentViewHolder, bgThemeColor]}>
                 <CustomDate/>
             </View>
-            <View style={styles.expenseComp}>
-                <View style={styles.expenseHeader}>
-                    <Text style={styles.expenseHeaderTxt}>Add Expense</Text>
-                    <MaterialIcons name="payment" size={24} color="black" style={{marginTop:5}}/>
+            <View style={[styles.expenseComp, bgThemeColor]}>
+                <View style={[styles.expenseHeader, bgThemeColor]}>
+                    <Text style={[styles.expenseHeaderTxt, fontThemeColor]}>Add Expense</Text>
+                    <MaterialIcons name="payment" size={24} color="black" style={[styles.iconStyle, fontThemeColor]}/>
                 </View>
-                <View style={styles.inputView}>
-                    <View style={styles.expenseView}>
-                        <View style={styles.iconHolder}>
-                            <Foundation name="dollar" size={34} color="black" />
+                <View style={[styles.inputView, bgThemeColor]}>
+                    <View style={[styles.expenseView, bgThemeColor]}>
+                        <View style={[styles.iconHolder, bgThemeColor]}>
+                            <Foundation name="dollar" size={34} style={[fontThemeColor]}/>
                         </View>
                         <TextInput 
-                        style={styles.Input}
-                        keyboardType="numeric"
-                        placeholder="0.00"
-                        cursorColor="black"
-                        selectionColor="grey"
-                        activeUnderlineColor="black"
-                        value={expense}
-                        onChangeText={exp=>setExpense(exp)}
+                            style={[styles.Input, bgThemeColor,fontThemeColor,{borderBottomColor:'lightgrey'}]}
+                            keyboardType="numeric"
+                            placeholder="0.00"
+                            placeholderTextColor={(fontThemeColor.color==='white')?'white':'grey'}
+                            selectionColor="grey"
+                            activeUnderlineColor={(fontThemeColor.color==='white')?'white':'black'}
+                            value={expense}
+                            onChangeText={exp=>setExpense(exp)}
+                            cursorColor={fontThemeColor}
                         />
                     </View>
                 </View>
-                <View style={styles.inputView}>
-                    <View style={styles.categoryView}>
-                        <View style={styles.iconHolderCategory}>
-                            <MaterialIcons name="category" size={32} color="black" />
+                <View style={[styles.inputView, bgThemeColor]}>
+                    <View style={[styles.categoryView, bgThemeColor]}>
+                        <View style={[styles.iconHolderCategory, bgThemeColor]}>
+                            <MaterialIcons name="category" size={32} style={[fontThemeColor]} />
                         </View>
                         <TextInput 
-                        style={styles.Input}
-                        placeholder="Enter a category"
-                        cursorColor="black"
-                        selectionColor="grey"
-                        activeUnderlineColor="black"
-                        value={category}
-                        onChangeText={cat=>setCategory(cat)}
+                            style={[styles.Input, bgThemeColor,fontThemeColor,{ borderBottomColor:'lightgrey'}]}
+                            placeholder="Enter a category"
+                            placeholderTextColor={(fontThemeColor.color==='white')?'white':'grey'}
+                            cursorColor={fontThemeColor}
+                            selectionColor="grey"
+                            activeUnderlineColor={(fontThemeColor.color==='white')?'white':'black'}
+                            value={category}
+                            onChangeText={cat=>setCategory(cat)}
                         />
                     </View>
                 </View>
                 <View style={styles.btnsView}>
-                    <TouchableOpacity style={styles.syncBtn} onPress={handleSync}>
-                        <Text style={{fontSize:18,}}>Sync</Text>
+                    <TouchableOpacity style={[styles.syncBtn, bgThemeColor]} onPress={handleSync}>
+                        <Text style={[fontThemeColor, {fontSize:16}]}>Sync</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.cancelBtn} onPress={handleCancel}>
-                        <Text style={{fontSize:18, color:'white'}}>Cancel</Text>
+                    <TouchableOpacity style={[styles.cancelBtn, bgThemeColor]} onPress={handleCancel}>
+                        <Text style={[fontThemeColor, {fontSize:16}]}>Cancel</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -141,6 +160,9 @@ export default function AddScreen(){
 }
 
 const styles = StyleSheet.create({
+    iconStyle:{
+        marginTop:5
+    },
     addscreen:{
         flex: 1,
         backgroundColor: 'white',
@@ -152,17 +174,13 @@ const styles = StyleSheet.create({
         backgroundColor:'white',
         borderRadius:10,
         margin:10,
-        elevation:5,
-        borderColor:darkColor1,
-        borderWidth:0.5,
+        elevation:3,
         minHeight:500
     },
     expenseHeader:{
         marginLeft:35,
         marginRight:35,
         marginTop:25,
-        borderBottomColor:darkColor4,
-        borderWidth:0.5,
         borderRightColor:'transparent',
         borderLeftColor:'transparent',
         borderTopColor:'transparent',
@@ -182,7 +200,8 @@ const styles = StyleSheet.create({
         marginTop:20,
         borderRadius:5,
         width:250,
-        height:45
+        height:45,
+        gap:5
     },
     categoryView:{
         marginStart:35,
@@ -191,7 +210,8 @@ const styles = StyleSheet.create({
         marginTop:20,
         borderRadius:5,
         width:250,
-        height:45
+        height:45,
+        gap:5
     }
     ,
     iconHolder:{
@@ -200,7 +220,7 @@ const styles = StyleSheet.create({
         paddingLeft:18,
         paddingTop:5,
         borderRadius:5,
-        borderWidth:0.5
+        elevation:3
     },
     iconHolderCategory:{
         backgroundColor:'white',
@@ -208,14 +228,12 @@ const styles = StyleSheet.create({
         paddingLeft:9,
         paddingTop:5,
         borderRadius:5,
-        borderWidth:0.5
+        elevation:3
     },
     Input:{
-        backgroundColor:'transparent',
         minWidth:245,
         fontSize:18,
-        borderColor:'transparent',
-        borderBottomWidth:0
+        borderBottomWidth:0.5,
     },
     syncBtn:{
         backgroundColor:'white',
@@ -224,7 +242,6 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:"center",
         borderRadius:50,
-        borderWidth:0.5,
         elevation:3,
     },
     cancelBtn:{
@@ -234,7 +251,6 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:"center",
         borderRadius:50,
-        borderWidth:0.5,
         elevation:3,
         marginTop:10
     },
@@ -242,5 +258,17 @@ const styles = StyleSheet.create({
         justifyContent:"center",
         alignItems:"center",
         margin:80
+    },
+    darkBGColor:{
+        backgroundColor:'#36393e'
+    },
+    lightBGColor:{
+        backgroundColor:'#FFFFFF'
+    },
+    darkThemeFontColor:{
+        color:'white'
+    },
+    lightThemeFontColor:{
+        color:'black'
     }
 })

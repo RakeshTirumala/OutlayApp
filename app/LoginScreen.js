@@ -60,7 +60,8 @@ export default function LoginScreen(){
                     // await ToastAndroid.show('Login Success!', ToastAndroid.BOTTOM);
                     Toast.show({
                         type:'success',
-                        text1:'Login Success!',
+                        text1:'Success!',
+                        text2:'Successfully logged in!'
                     })
                     console.log(data.token)
                     navigation.navigate('Main');
@@ -69,14 +70,16 @@ export default function LoginScreen(){
                     // await ToastAndroid.show('Invalid email or password!', ToastAndroid.BOTTOM);
                     Toast.show({
                         type:'info',
-                        text1:'Invalid email or password!',
+                        text1:'Invalid!',
+                        text2:'Invalid email or password'
                     })
                     break;
                 case 500:
                     // await ToastAndroid.show('Internal Error!', ToastAndroid.BOTTOM)
                     Toast.show({
                         type:'error',
-                        text1:'Internal Error!',
+                        text1:'Error!',
+                        text2:'Internal Issue, Try again!'
                     })
                     break;
                 default:

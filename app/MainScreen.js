@@ -15,7 +15,7 @@ export default function MainScreen(){
   return(
     <Tab.Navigator 
     initialRouteName="Outlay" 
-    barStyle={{backgroundColor:primaryColor}}
+    barStyle={{backgroundColor:secondaryColor}}
     >
       <Tab.Screen 
       name="Add"
