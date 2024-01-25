@@ -59,6 +59,7 @@ export default function MonthViewComp(){
         setFontThemeColor((t==='true')?styles.darkThemeFontColor:styles.lightThemeFontColor)
     }
 
+
     useEffect(()=>{
         async function fetchTokenEmail(){
             const token = await AsyncStorage.getItem('token');
@@ -75,10 +76,11 @@ export default function MonthViewComp(){
 
         return () => {
             clearInterval(themePollingInterval);
+
         };  
 
     },[token, email, monthYear])
-    // setTheme()
+    
 
     // console.log('Categories:', categories)
     // console.log('expenses', expenses)
@@ -97,28 +99,6 @@ export default function MonthViewComp(){
                     <CustomDate/>
                 </View>
             </View>
-            {
-                expenses=== undefined || colors === undefined ||
-                expenses.length === 0 || colors.length === 0 ? (
-                    <View style={{
-                        backgroundColor:bgThemeColor, 
-                        margin:20, 
-                        alignItems:"center",
-                        padding:25,
-                    }}>
-                        <MaterialCommunityIcons name="cloud-braces" size={250} style={[fontThemeColor]}/>
-                        <Text>No Data!</Text>
-                    </View>
-                ) : (
-                    <View style={[styles.pieChartView, bgThemeColor]}>
-                        {expenses.length === colors.length ? (
-                            <PieChart widthAndHeight={widthAndHeight} series={expenses} sliceColor={colors}/>
-                        ) : (
-                            <Text>Error: Lengths of expenses and colors arrays do not match</Text>
-                        )}
-                    </View>
-                )
-            }
             {refreshing?<ActivityIndicator/>:null}
             <ScrollView 
             style={[styles.scrollViewCategories, bgThemeColor]}
@@ -126,6 +106,28 @@ export default function MonthViewComp(){
                 <RefreshControl refreshing={refreshing} onRefresh={fetchDataFromMongoDB} />
             }
             >
+                {
+                    expenses=== undefined || colors === undefined ||
+                    expenses.length === 0 || colors.length === 0 ? (
+                        <View style={{
+                            backgroundColor:bgThemeColor, 
+                            margin:20, 
+                            alignItems:"center",
+                            padding:25,
+                        }}>
+                            <MaterialCommunityIcons name="cloud-braces" size={250} style={[fontThemeColor]}/>
+                            <Text>No Data!</Text>
+                        </View>
+                    ) : (
+                        <View style={[styles.pieChartView, bgThemeColor]}>
+                            {expenses.length === colors.length ? (
+                                <PieChart widthAndHeight={widthAndHeight} series={expenses} sliceColor={colors}/>
+                            ) : (
+                                <Text>Error: Lengths of expenses and colors arrays do not match</Text>
+                            )}
+                        </View>
+                    )
+                }
                 {
                     (combinedData===undefined)?
                     (
