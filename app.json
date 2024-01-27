@@ -1,13 +1,14 @@
 {
   "expo": {
-    "name": "OutlayApp",
-    "slug": "OutlayApp",
+    "name": "Outlay",
+    "slug": "Outlay",
+    "description":"Outlay: Effortless expense tracking for financial control. Log expenses, set budgets, and gain insights. Your path to financial empowerment starts here.",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/Outlay.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/Outlay.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
