@@ -48,7 +48,7 @@ export default function MonthViewComp(){
         }catch(error){
             console.log("Failed!")
             console.log("Error:", error)
-            Toast.show({type:'error', text1:'Failed to fetch!'})
+            Toast.show({type:'error'    , text1:'Failed to fetch!'})
         }
     }
 
@@ -93,7 +93,7 @@ export default function MonthViewComp(){
             <View style={{flexDirection:'row', gap:65}}>
                 <View style={[styles.totalView, bgThemeColor]}>
                     <FontAwesome5 name="coins" size={24} style={[fontThemeColor]} />
-                    <Text style={[styles.totalViewTxt, fontThemeColor]}>$ {total.toFixed(2)}</Text>
+                    <Text style={[styles.totalViewTxt, fontThemeColor]}>$ {formatExpense(total.toFixed(2))}</Text>
                 </View>
                 <View style={styles.dateComponentViewHolder}>
                     <CustomDate/>
@@ -115,8 +115,8 @@ export default function MonthViewComp(){
                             alignItems:"center",
                             padding:25,
                         }}>
-                            <MaterialCommunityIcons name="cloud-braces" size={250} style={[fontThemeColor]}/>
-                            <Text>No Data!</Text>
+                            <MaterialCommunityIcons name="cloud-braces" size={150} style={[fontThemeColor]}/>
+                            <Text style={[fontThemeColor]}>No Data!</Text>
                         </View>
                     ) : (
                         <View style={[styles.pieChartView, bgThemeColor]}>
@@ -148,16 +148,36 @@ export default function MonthViewComp(){
     );
 }
 
+function formatExpense(value) {
+    const billion = 1000000000;
+    const million = 1000000;
+    const thousand = 1000;
+
+    if (value >= billion) {
+        return (value / billion).toFixed(1) + 'B';
+    } else if (value >= million) {
+        return (value / million).toFixed(1) + 'M';
+    } else if (value >= thousand) {
+        return (value / thousand).toFixed(1) + 'K';
+    } else {
+        return value.toLocaleString();
+    }
+}
+
 const CategoryComp=(props)=>{
+
+    const expense = formatExpense(props.item.expense.toFixed(2))
+
     return(
         <View style={[styles.categoriesComp, props.bgThemeColor]}>
             <View style={{width:25, height:25, backgroundColor:props.item.color}}/>
             <Text style={[styles.categoriesCompCat, props.fontThemeColor]}>{props.item.category}</Text>
             <Text style={[styles.categoriesCompPercent, props.fontThemeColor]}>{props.item.percentage}</Text>
-            <Text style={[styles.categoriesCompExp, props.fontThemeColor]}>$ {props.item.expense.toFixed(2)}</Text>
+            <Text style={[styles.categoriesCompExp, props.fontThemeColor]}>$ {expense}</Text>
         </View>
     )
 }
+
 
 const styles = StyleSheet.create({
     totalViewTxt:{

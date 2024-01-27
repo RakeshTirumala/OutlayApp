@@ -46,7 +46,7 @@ export default function AddScreen(){
                 body:JSON.stringify({
                     email:email,
                     date:dateTostoreInDb,
-                    expense:expense,
+                    expense:expense.trim(),
                     category:category
                 })
             })

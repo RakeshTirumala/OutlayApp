@@ -13,6 +13,16 @@ export default function SigninScreen(){
     const navigation = useNavigation();
 
     const handleSignin=async()=>{
+        if (password.trim() === '' || confirmPassword.trim() === '') {
+            Toast.show({ type: 'error', text1: "Password fields can't be empty" });
+            return;
+        }
+        if(password!==confirmPassword){
+            Toast.show({type:'error', text1:"Passwords don't match"});
+            setConfirmPassword('');
+            setPassword('');
+            return;
+        }
         try{
             const response = await fetch(process.env.EXPO_PUBLIC_SIGNIN_URL_GOOGLE, {
                 method:'POST',
@@ -129,7 +139,7 @@ export default function SigninScreen(){
                     </View>
                 </View>
                 <TouchableOpacity style={styles.signinBtn} onPress={handleSignin}>
-                    <Text style={{color:'white', fontSize:16}}>Sign In</Text>
+                    <Text style={{color:'white', fontSize:16}}>Sign Up</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleLogin}>
                     <Text>Have an Account? <Text style={{textDecorationLine:'underline'}}>Log In!</Text></Text>
